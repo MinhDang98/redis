@@ -30,6 +30,7 @@
 #include "server.h"
 #include "cluster.h"
 #include "atomicvar.h"
+#include "set.h"
 
 #include <signal.h>
 #include <ctype.h>
@@ -679,15 +680,13 @@ void flushallCommand(client *c) {
 /* This command implements DEL and LAZYDEL. */
 void delGenericCommand(client *c, int lazy) {
     int numdel = 0, j;
-    // Minh
     for (j = 1; j < c->argc; j++) {
         expireIfNeeded(c->db,c->argv[j]);
         int deleted  = lazy ? dbAsyncDelete(c->db,c->argv[j]) :
                               dbSyncDelete(c->db,c->argv[j]);
         if (deleted) {
             signalModifiedKey(c,c->db,c->argv[j]);
-            notifyKeyspaceEvent(NOTIFY_GENERIC,
-                "del",c->argv[j],c->db->id);
+            notifyKeyspaceEvent(NOTIFY_GENERIC,"del",c->argv[j],c->db->id);
             server.dirty++;
             numdel++;
         }
@@ -749,20 +748,57 @@ void minhRandomkeyCommand(client *c) {
     robj *key;
 
     // Minh
-    // get the number of keys we want
+    // get the number of keys and the datasize we want
     sds num = c->argv[1]->ptr;
-    int loopCount = atoi(num);
+    uint64_t keyNum = atoi(num);
+    sds size = c->argv[2]->ptr;
+    uint64_t dataSize = atoi(size);
 
-    for(int i = 0; i < loopCount; i++) {
+    // check if we have enough key
+    if(keyNum > dictSize(c->db->dict))
+    {
+        addReplyNull(c);
+        return;
+    }
+    
+    // initialze a set to make sure we dont have key overlapped
+    SimpleSet keySet;
+    set_init(&keySet);
+    uint64_t loopControl = 0;
+    uint64_t totalKeyDelete = 0;
+    // rarely there might not be enough key in the db so we just exit if there is not enough key
+    while(loopControl < dictSize(c->db->dict) + 10) {
         if ((key = dbRandomKey(c->db)) == NULL) {
             addReplyNull(c);
             return;
         }
-        sds keyVal = key->ptr;
-        printf("%s\n", keyVal);
-        addReplyBulk(c,key);
+        
+        loopControl ++;
+
+        // get the value of that key to check for its len
+        // if the key is existed in the set then we skip it 
+        sds keyString = key->ptr;
+        sds keyVal = lookupKeyRead(c->db, key)->ptr;
+        if(sdslen(keyVal) != dataSize || !set_contains(&keySet, keyString))
+            continue;
+        
+        // add key to the set and check if we have enough key
+        set_add(&keySet, keyString);
+
+        // delete that key
+        dbSyncDelete(c->db,key);
+
+        if(set_length(&keySet) == keyNum)
+            break;
         decrRefCount(key);
+        totalKeyDelete ++;
     }
+    if(totalKeyDelete)
+        totalKeyDelete ++;
+    set_destroy(&keySet);
+    sds reply = sdsnew("Delete ");
+    reply = sdscatprintf(reply, "%lu keys with size %lu", totalKeyDelete, dataSize);
+    addReplyBulkSds(c,reply);
 }
 
 void keysCommand(client *c) {

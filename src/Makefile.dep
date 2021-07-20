@@ -76,7 +76,7 @@ db.o: db.c server.h fmacros.h config.h solarisfixes.h rio.h sds.h \
  ae.h monotonic.h dict.h mt19937-64.h adlist.h zmalloc.h anet.h ziplist.h \
  intset.h version.h util.h latency.h sparkline.h quicklist.h rax.h \
  redismodule.h zipmap.h sha1.h endianconv.h crc64.h stream.h listpack.h \
- rdb.h cluster.h
+ rdb.h cluster.h 
 debug.o: debug.c server.h fmacros.h config.h solarisfixes.h rio.h sds.h \
  connection.h atomicvar.h ../deps/lua/src/lua.h ../deps/lua/src/luaconf.h \
  ae.h monotonic.h dict.h mt19937-64.h adlist.h zmalloc.h anet.h ziplist.h \
@@ -234,7 +234,7 @@ redis-cli.o: redis-cli.c fmacros.h version.h ../deps/hiredis/hiredis.h \
  ../deps/hiredis/sdscompat.h ../deps/hiredis/sds.h dict.h mt19937-64.h \
  adlist.h zmalloc.h ../deps/linenoise/linenoise.h help.h anet.h ae.h \
  monotonic.h cli_common.h
-release.o: release.c release.h version.h crc64.h
+release.o: release.c release.h version.h crc64.h 
 replication.o: replication.c server.h fmacros.h config.h solarisfixes.h \
  rio.h sds.h connection.h atomicvar.h ../deps/lua/src/lua.h \
  ../deps/lua/src/luaconf.h ae.h monotonic.h dict.h mt19937-64.h adlist.h \
@@ -269,6 +269,7 @@ server.o: server.c server.h fmacros.h config.h solarisfixes.h rio.h sds.h \
  intset.h version.h util.h latency.h sparkline.h quicklist.h rax.h \
  redismodule.h zipmap.h sha1.h endianconv.h crc64.h stream.h listpack.h \
  rdb.h cluster.h slowlog.h bio.h asciilogo.h
+set.o: set.h set.c
 setcpuaffinity.o: setcpuaffinity.c config.h
 setproctitle.o: setproctitle.c
 sha1.o: sha1.c solarisfixes.h sha1.h config.h

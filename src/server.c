@@ -652,8 +652,8 @@ struct redisCommand redisCommandTable[] = {
      0,NULL,0,0,0,0,0,0},
 
     // Minh
-    // randomly return a number of keys
-    {"minhrandomkey",minhRandomkeyCommand,2,
+    // randomly del a number of keys with a given size
+    {"minhrandomkey",minhRandomkeyCommand,3,
      "read-only random @keyspace",
      0,NULL,1,1,1,0,0,0},
 

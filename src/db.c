@@ -767,7 +767,8 @@ void minhRandomkeyCommand(client *c) {
     uint64_t loopControl = 0;
     uint64_t totalKeyDelete = 0;
     // rarely there might not be enough key in the db so we just exit if there is not enough key
-    while(loopControl < dictSize(c->db->dict) + 10) {
+    // sometime we can hit the same key multiple time so we could delete less key than we want
+    while(loopControl < dictSize(c->db->dict) * 2) {
         if ((key = dbRandomKey(c->db)) == NULL) {
             addReplyNull(c);
             return;
@@ -787,6 +788,7 @@ void minhRandomkeyCommand(client *c) {
 
         // delete that key
         dbSyncDelete(c->db,key);
+        // dbAsyncDelete(c->db,key);
 
         if(set_length(&keySet) == keyNum)
             break;

@@ -234,6 +234,12 @@ ifeq ($(MALLOC),jemalloc)
 	FINAL_LIBS := ../deps/jemalloc/lib/libjemalloc.a $(FINAL_LIBS)
 endif
 
+# Dat mod
+ifeq ($(MALLOC),libc)
+	FINAL_LIBS+=$(MALLOC_LIB)
+endif
+# Dat mod ends
+
 ifeq ($(BUILD_TLS),yes)
 	FINAL_CFLAGS+=-DUSE_OPENSSL $(OPENSSL_CFLAGS)
 	FINAL_LDFLAGS+=$(OPENSSL_LDFLAGS)

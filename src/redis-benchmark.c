@@ -1854,10 +1854,6 @@ int main(int argc, const char **argv) {
         }
 
         if (test_is_selected("set")) {
-
-            // Minh
-            // printf("%s %s\n", tag, data);
-
             len = redisFormatCommand(&cmd,"SET key%s:__rand_int__ %s",tag,data);
             benchmark("SET",cmd,len);
             free(cmd);

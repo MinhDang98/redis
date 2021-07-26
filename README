@@ -1,0 +1,6 @@
+Disable auto snapshot
+
+./redis-server&
+
+./redis-cli config set save ""
+./redis-cli config set appendonly no

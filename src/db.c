@@ -788,7 +788,6 @@ void minhRandomkeyCommand(client *c) {
 
         // delete that key
         dbSyncDelete(c->db,key);
-        // dbAsyncDelete(c->db,key);
 
         if(set_length(&keySet) == keyNum)
             break;

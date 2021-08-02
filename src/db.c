@@ -762,13 +762,13 @@ void minhRandomkeyCommand(client *c) {
     }
     
     // initialze a set to make sure we dont have key overlapped
-    SimpleSet keySet;
-    set_init(&keySet);
+    // SimpleSet keySet;
+    // set_init(&keySet);
     uint64_t loopControl = 0;
     uint64_t totalKeyDelete = 0;
     // rarely there might not be enough key in the db so we just exit if there is not enough key
     // sometime we can hit the same key multiple time so we could delete less key than we want
-    while(loopControl < dictSize(c->db->dict) * 2) {
+    while(totalKeyDelete < keyNum || loopControl < dictSize(c->db->dict) * 2) {
         if ((key = dbRandomKey(c->db)) == NULL) {
             addReplyNull(c);
             return;
@@ -778,25 +778,23 @@ void minhRandomkeyCommand(client *c) {
 
         // get the value of that key to check for its len
         // if the key is existed in the set then we skip it 
-        sds keyString = key->ptr;
+        // sds keyString = key->ptr;
         sds keyVal = lookupKeyRead(c->db, key)->ptr;
-        if(sdslen(keyVal) != dataSize || !set_contains(&keySet, keyString))
+        if(sdslen(keyVal) != dataSize) // || !set_contains(&keySet, keyString))
             continue;
         
         // add key to the set and check if we have enough key
-        set_add(&keySet, keyString);
+        // set_add(&keySet, keyString);
 
         // delete that key
         dbSyncDelete(c->db,key);
 
-        if(set_length(&keySet) == keyNum)
-            break;
+        // if(set_length(&keySet) == keyNum)
+        //     break;
         decrRefCount(key);
         totalKeyDelete ++;
     }
-    if(totalKeyDelete)
-        totalKeyDelete ++;
-    set_destroy(&keySet);
+    // set_destroy(&keySet);
     sds reply = sdsnew("Delete ");
     reply = sdscatprintf(reply, "%lu keys with size %lu", totalKeyDelete, dataSize);
     addReplyBulkSds(c,reply);

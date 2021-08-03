@@ -1,3 +1,3 @@
-#define REDIS_GIT_SHA1 "d9d05ffb"
-#define REDIS_GIT_DIRTY "94"
-#define REDIS_BUILD_ID "minh-Nitro-AN515-51-1627929140"
+#define REDIS_GIT_SHA1 "dd367e76"
+#define REDIS_GIT_DIRTY "25"
+#define REDIS_BUILD_ID "minh-Nitro-AN515-51-1628010071"

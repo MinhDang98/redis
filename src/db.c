@@ -747,7 +747,6 @@ void randomkeyCommand(client *c) {
 void minhRandomkeyCommand(client *c) {
     robj *key;
 
-    // Minh
     // get the number of keys and the datasize we want
     sds num = c->argv[1]->ptr;
     uint64_t keyNum = atoi(num);
@@ -766,9 +765,10 @@ void minhRandomkeyCommand(client *c) {
     // set_init(&keySet);
     uint64_t loopControl = 0;
     uint64_t totalKeyDelete = 0;
+    
+    // exit when we had deleted enough keys
     // rarely there might not be enough key in the db so we just exit if there is not enough key
-    // sometime we can hit the same key multiple time so we could delete less key than we want
-    while(totalKeyDelete < keyNum || loopControl < dictSize(c->db->dict) * 2) {
+    while(totalKeyDelete < keyNum && loopControl < dictSize(c->db->dict)) {
         if ((key = dbRandomKey(c->db)) == NULL) {
             addReplyNull(c);
             return;

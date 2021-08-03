@@ -30,7 +30,6 @@
 #include "server.h"
 #include "cluster.h"
 #include "atomicvar.h"
-// #include "set.h"
 
 #include <signal.h>
 #include <ctype.h>
@@ -760,9 +759,6 @@ void minhRandomkeyCommand(client *c) {
         return;
     }
     
-    // initialze a set to make sure we dont have key overlapped
-    // SimpleSet keySet;
-    // set_init(&keySet);
     uint64_t loopControl = 0;
     uint64_t totalKeyDelete = 0;
     
@@ -777,20 +773,12 @@ void minhRandomkeyCommand(client *c) {
         loopControl ++;
 
         // get the value of that key to check for its len
-        // if the key is existed in the set then we skip it 
-        // sds keyString = key->ptr;
         sds keyVal = lookupKeyRead(c->db, key)->ptr;
         if(sdslen(keyVal) != dataSize) // || !set_contains(&keySet, keyString))
             continue;
         
-        // add key to the set and check if we have enough key
-        // set_add(&keySet, keyString);
-
         // delete that key
         dbSyncDelete(c->db,key);
-
-        // if(set_length(&keySet) == keyNum)
-        //     break;
         decrRefCount(key);
         totalKeyDelete ++;
     }

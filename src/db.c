@@ -769,7 +769,7 @@ void minhRandomkeyCommand(client *c) {
             addReplyNull(c);
             return;
         }
-        
+        printf("%ld\n", loopControl);
         loopControl ++;
 
         // get the value of that key to check for its len
@@ -784,7 +784,8 @@ void minhRandomkeyCommand(client *c) {
     }
     // set_destroy(&keySet);
     sds reply = sdsnew("Delete ");
-    reply = sdscatprintf(reply, "%lu keys with size %lu", totalKeyDelete, dataSize);
+    // the reason for missing keys is because we could get random keys that doesn't have the correct length
+    reply = sdscatprintf(reply, "%lu keys with size %lu miss %ld deletions", totalKeyDelete, dataSize, keyNum - totalKeyDelete);
     addReplyBulkSds(c,reply);
 }
 

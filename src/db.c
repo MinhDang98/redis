@@ -769,12 +769,11 @@ void minhRandomkeyCommand(client *c) {
             addReplyNull(c);
             return;
         }
-        printf("%ld\n", loopControl);
         loopControl ++;
 
         // get the value of that key to check for its len
         sds keyVal = lookupKeyRead(c->db, key)->ptr;
-        if(sdslen(keyVal) != dataSize) // || !set_contains(&keySet, keyString))
+        if(sdslen(keyVal) != dataSize)
             continue;
         
         // delete that key

@@ -769,7 +769,6 @@ void minhRandomkeyCommand(client *c) {
             addReplyNull(c);
             return;
         }
-        printf("%ld\n", loopControl);
         loopControl ++;
 
         // get the value of that key to check for its len
